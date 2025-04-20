@@ -25,14 +25,19 @@ public class AuthService {
 
     @Transactional
     public SignupResponse signup(SignupRequest signupRequest) {
+        // 이메일 중복 체크를 먼저 수행
+         if (userRepository.existsByEmail(signupRequest.getEmail())) {
+             throw new InvalidRequestException("이미 존재하는 이메일입니다.");
+         }
 
+        // 그자음에 중복 체크 통과 후 비밀번호 인코딩을 수행한다.
         String encodedPassword = passwordEncoder.encode(signupRequest.getPassword());
 
         UserRole userRole = UserRole.of(signupRequest.getUserRole());
 
-        if (userRepository.existsByEmail(signupRequest.getEmail())) {
-            throw new InvalidRequestException("이미 존재하는 이메일입니다.");
-        }
+        //if (userRepository.existsByEmail(signupRequest.getEmail())) {
+        //    throw new InvalidRequestException("이미 존재하는 이메일입니다.");
+        //}
 
         User newUser = new User(
                 signupRequest.getEmail(),
